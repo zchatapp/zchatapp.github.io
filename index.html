@@ -29,7 +29,8 @@ html[data-theme=light]{
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
-html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow:hidden}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:var(--ff,"Helvetica Neue",Helvetica,Arial,sans-serif);overflow:hidden}
+button,input,textarea,select{font-family:inherit}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
 #app{position:relative;height:100dvh;max-width:480px;margin:0 auto;overflow:hidden;background:var(--bg)}
@@ -270,6 +271,80 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 #menu button:active{background:rgba(128,128,128,.25)}
 #toast{position:absolute;z-index:60;left:50%;bottom:110px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:rgba(30,30,34,.96);color:#fff;border:1px solid rgba(255,255,255,.25);padding:10px 18px;border-radius:22px;font-size:14px;transition:.25s;max-width:90%;text-align:center}
 #toast.show{opacity:1;transform:translate(-50%,0)}
+
+#pop{position:fixed;inset:0;z-index:90;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.28);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);animation:popin .18s ease}
+.popbox{display:flex;flex-direction:column;gap:10px;width:min(340px,100%);max-height:100%;overflow:auto}
+.popbox .brow{pointer-events:none}
+.emrow{display:flex;justify-content:space-between;border-radius:999px;padding:6px 10px}
+.emrow button{font-size:26px;background:none;border:0;padding:4px 6px;transition:transform .15s}
+.emrow button:active{transform:scale(1.35)}
+.pact{border-radius:20px;overflow:hidden;display:flex;flex-direction:column}
+.pact button{background:none;border:0;color:var(--fg);font-size:16px;padding:14px 18px;text-align:left;border-bottom:1px solid var(--edge)}
+.pact button:last-child{border-bottom:0}.pact .dg{color:#ff453a}
+@keyframes popin{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}
+.bcol{display:flex;flex-direction:column;max-width:80%;min-width:0}
+.brow.me .bcol{align-items:flex-end}.brow.them .bcol{align-items:flex-start}
+.bcol .bubble{max-width:100%}
+.rxs{display:flex;gap:4px;margin-top:-8px;position:relative;z-index:1;padding:0 8px}
+.rx{font-size:13px;padding:2px 7px;border-radius:999px;background:var(--field);border:1px solid var(--edge);color:var(--fg)}
+.rx.mine{border-color:var(--accent)}
+.bubble.gone{font-style:italic;opacity:.65}
+.bubble,.row{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.typing{display:flex;gap:5px;padding:13px 16px}
+.typing i{width:7px;height:7px;border-radius:50%;background:var(--fg2);animation:tp 1.1s infinite}
+.typing i:nth-child(2){animation-delay:.18s}.typing i:nth-child(3){animation-delay:.36s}
+@keyframes tp{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-4px)}}
+.editbar{display:flex;justify-content:space-between;align-items:center;padding:6px 16px;font-size:13px;color:var(--fg2)}
+.editbar button{background:none;border:0;color:var(--accent);font-size:13px}
+.pinmk::before{content:"";display:block;width:9px;height:9px;border:2px solid var(--fg2);border-radius:50% 50% 50% 0;transform:rotate(-45deg);margin:0 8px}
+.row.arch{justify-content:center;color:var(--accent);font-size:15px}
+
+#wp{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+#wp i{position:absolute;inset:-24px;filter:blur(var(--wpblur,0px))}
+#wp::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,var(--wpdim,0))}
+html[data-bg=gradient] .blobs i,html[data-bg=plain] .blobs i{display:none}
+html[data-bg=gradient] .blobs{background:linear-gradient(160deg,var(--bg1),var(--bg2))}
+html[data-bg=plain] .blobs{background:var(--bg1)}
+html[data-ui=plat] .glass,html[data-ui=plat] .glassbtn{background:var(--field);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border:1px solid var(--edge)}
+html[data-ui=plat] .bubble.me,html[data-ui=plat] .nav{background:var(--accent);-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none;border-color:transparent}
+html[data-ui=plat] .bubble::before{display:none}
+html[data-ui=plat] .nav .ind{background:rgba(255,255,255,.28);box-shadow:none;border-color:transparent}
+html[data-ui=gradient] .glass{background:linear-gradient(135deg,rgba(var(--acc-rgb),.3),rgba(var(--acc2-rgb),.22))}
+html[data-ui=gradient] .bubble.me,html[data-ui=gradient] .nav{background:linear-gradient(135deg,rgb(var(--acc-rgb)),rgb(var(--acc2-rgb)))}
+
+:root{--spring:cubic-bezier(.32,.72,0,1)}
+.screen.active{animation:push .42s var(--spring)}
+@keyframes push{from{opacity:0;transform:translateX(26px) scale(.985)}to{opacity:1;transform:none}}
+.tabs[data-dir=l] .tab.active{animation:tabL .42s var(--spring)}
+.tabs[data-dir=r] .tab.active{animation:tabR .42s var(--spring)}
+@keyframes tabL{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:none}}
+@keyframes tabR{from{opacity:0;transform:translateX(-34px)}to{opacity:1;transform:none}}
+button,.row{transition:transform .25s var(--spring),opacity .2s,background .2s}
+button:active,.row:active{transform:scale(.96)}
+.emrow button:active{transform:scale(1.35)}
+.nav .ind{transition:transform .5s var(--spring)}
+#tab-story .stories{flex-wrap:wrap;overflow:visible}
+#profileBox{display:flex;min-height:62vh;align-items:center;justify-content:center}
+#profileBox .profile{display:flex;flex-direction:column;align-items:center}
+.hdrbtns{display:flex;gap:10px;align-items:center}
+.cam svg{display:block}
+
+#pop{z-index:300}
+.av{outline:0 solid transparent;outline-offset:2px}
+.av.fr-ring{outline:3px solid var(--accent)}
+.av.fr-neon{outline:3px solid #00f0ff;filter:drop-shadow(0 0 6px rgba(0,240,255,.8))}
+.av.fr-rainbow{outline:3px solid #ff3b30;animation:rbw 4s linear infinite}
+.av.fr-gold{outline:3px solid #f5b81c;filter:drop-shadow(0 0 7px rgba(245,184,28,.85))}
+.av.fr-aurora{outline:3px solid #35e0c0;animation:aur 5s ease-in-out infinite}
+@keyframes rbw{0%,100%{outline-color:#ff3b30}20%{outline-color:#ff9500}40%{outline-color:#34c759}60%{outline-color:#32ade6}80%{outline-color:#af52de}}
+@keyframes aur{0%,100%{outline-color:#35e0c0;filter:drop-shadow(0 0 7px rgba(53,224,192,.8))}50%{outline-color:#b06bff;filter:drop-shadow(0 0 9px rgba(176,107,255,.85))}}
+.pvban{width:100%;height:112px;border-radius:18px;background:linear-gradient(135deg,rgba(var(--acc-rgb),.7),rgba(var(--acc2-rgb),.6)) center/cover;margin-bottom:4px}
+.pvban+.av{margin-top:-52px;position:relative;box-shadow:0 0 0 4px var(--bg)}
+#epBan{height:96px}
+#epFr{flex-wrap:wrap;border-radius:18px}
+#profileBox .profile{width:100%;max-width:420px;padding:0 22px;box-sizing:border-box}
+#profileBox .pvban{border:0;display:block;height:132px}
+#profileBox .avbtn{margin-top:-58px;position:relative}
 </style>
 </head>
 <body>
@@ -303,8 +378,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
         <div id="stories" class="stories"></div>
         <div id="chatList"></div>
       </div>
-      <div id="tab-contact" class="tab">
-        <h2 class="sub">Contact</h2>
+      <div id="tab-story" class="tab">
+        <h2 class="sub">Story</h2>
         <div id="contactList"></div>
         <div style="padding:14px 28px"><button id="addBtn2" class="primary" type="button">add friend</button></div>
       </div>
@@ -313,7 +388,7 @@ input[type=range]{width:100%;accent-color:var(--accent)}
     <nav class="nav">
       <span class="ind" id="ind"></span>
       <button data-tab="home" class="on" type="button">Home</button>
-      <button data-tab="contact" type="button">Contact</button>
+      <button data-tab="story" type="button">Story</button>
       <button data-tab="profile" type="button">Profile</button>
     </nav>
   </section>
@@ -578,20 +653,22 @@ function hue(name) { return [...name].reduce((a, c) => a + c.charCodeAt(0) * 7, 
 function gradient(name) { const hu = hue(name); return `linear-gradient(135deg,hsl(${hu} 70% 55%),hsl(${(hu + 50) % 360} 70% 38%))`; }
 function avatar(name, img, cls = '') {
   const e = h('div', { class: 'av ' + cls });
+  const ao = me && name === me.username ? me : contacts[name];
+  if (ao && ao.frame && ao.frame !== 'none') e.classList.add('fr-' + ao.frame);
   if (img) e.style.backgroundImage = `url("${img}")`;
   else { e.style.background = gradient(name); e.textContent = (name[0] || '?').toUpperCase(); }
   return e;
 }
 const nn = a => a.filter(x => x != null && x !== false);
 const cleanStr = (x, n) => typeof x === 'string' ? x.slice(0, n) : '';
-const isDev = u => DEV_USERS.includes(u);
+const isDev = u => !!((me && u === me.username ? me : contacts[u]) || {}).verified;
 function devBadge() {
   const s = h('span', { class: 'badge-gold', title: 'Developer' });
   s.innerHTML = '<svg viewBox="0 0 24 24"><rect x="4.5" y="4.5" width="15" height="15" rx="4" fill="#f5b81c"/><rect x="4.5" y="4.5" width="15" height="15" rx="4" fill="#ffd54a" transform="rotate(45 12 12)"/><path d="M8.2 12.3l2.5 2.5 5-5.3" fill="none" stroke="#5c3d00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   return s;
 }
 function dispName(u) { const o = me && u === me.username ? me : contacts[u]; return (o && o.name) || u; }
-function nameNode(u) { return h('span', { class: 'nmw' }, h('span', null, dispName(u)), isDev(u) ? devBadge() : null); }
+function nameNode(u) { const o = (me && u === me.username ? me : contacts[u]) || {}; return h('span', { class: 'nmw' }, h('span', o.nameColor ? { style: 'color:' + o.nameColor } : null, dispName(u)), isDev(u) ? devBadge() : null); }
 function insertAtCaret(inp, txt) {
   const s = inp.selectionStart == null ? inp.value.length : inp.selectionStart, e = inp.selectionEnd == null ? s : inp.selectionEnd;
   inp.value = inp.value.slice(0, s) + txt + inp.value.slice(e);
@@ -642,7 +719,7 @@ async function shrink(file, max, q) {
 
 /* ---------- state ---------- */
 let me = null, idName = {}, seen = {};
-const S = Object.assign({ theme: 'light', accent: '#1d93e9', glass: 1, blur: 18, showOnline: true, readReceipts: true, shareAvatar: true, shareBio: true, shareBirth: false, onlyContacts: false, sound: true }, LS.get('zc_settings', {}));
+const S = Object.assign({ theme: 'light', accent: '#1d93e9', glass: 1, blur: 18, showOnline: true, readReceipts: true, shareAvatar: true, shareBio: true, shareBirth: false, onlyContacts: false, sound: true, ui: 'liquid', acc2: '#9b4dff', bg: 'blobs', bgC1: '#1d93e9', bgC2: '#9b4dff', font: 'def', wpDim: .15, wpBlur: 0, wpPreset: -1 }, LS.get('zc_settings', {}));
 let contacts = {};
 let unread = {};
 let blocked = [];
@@ -670,6 +747,11 @@ function applyTheme() {
   const r = document.documentElement; r.dataset.theme = t;
   r.style.setProperty('--acc-rgb', hexToRgb(S.accent).join(','));
   r.style.setProperty('--gk', S.glass); r.style.setProperty('--blur', S.blur + 'px');
+  r.dataset.ui = S.ui; r.dataset.bg = S.bg;
+  r.style.setProperty('--acc2-rgb', hexToRgb(S.acc2).join(','));
+  r.style.setProperty('--bg1', S.bgC1); r.style.setProperty('--bg2', S.bgC2);
+  r.style.setProperty('--wpdim', S.wpDim); r.style.setProperty('--wpblur', S.wpBlur + 'px');
+  applyFont();
   const mt = document.querySelector('meta[name=theme-color]'); if (mt) mt.content = t === 'light' ? '#e9eff9' : '#05060a';
 }
 try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (S.theme === 'auto') applyTheme(); }); } catch (e) {}
@@ -683,9 +765,11 @@ function back() {
 }
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-back]')) back(); });
 function setTab(t) {
+  const TL = ['home', 'story', 'profile'];
+  $('.tabs').dataset.dir = TL.indexOf(t) >= TL.indexOf(tab) ? 'l' : 'r';
   tab = t;
-  ['home', 'contact', 'profile'].forEach(x => $('#tab-' + x).classList.toggle('active', x === t));
-  const idx = ['home', 'contact', 'profile'].indexOf(t);
+  ['home', 'story', 'profile'].forEach(x => $('#tab-' + x).classList.toggle('active', x === t));
+  const idx = ['home', 'story', 'profile'].indexOf(t);
   document.querySelectorAll('.nav button').forEach((b, i) => b.classList.toggle('on', i === idx));
   $('#ind').style.transform = `translateX(${idx * 100}%)`;
 }
@@ -729,7 +813,7 @@ async function enter(sess) {
   const pr = await sb.from('profiles').select('*').eq('id', sess.user.id).single();
   if (pr.error || !pr.data) { await sb.auth.signOut(); showAuth(); $('#authErr').textContent = 'Profil gagal dimuat: ' + (pr.error ? pr.error.message : 'belum dibuat di server'); return; }
   const d = pr.data;
-  me = { id: d.id, username: d.username, avatar: AV_RE.test(d.avatar || '') ? d.avatar : null, name: d.name || '', bio: d.bio || '', birth: d.birth || '' };
+  me = { id: d.id, username: d.username, avatar: AV_RE.test(d.avatar || '') ? d.avatar : null, name: d.name || '', bio: d.bio || '', birth: d.birth || '', banner: AV_RE.test(d.banner || '') ? d.banner : null, frame: d.frame || 'none', verified: !!d.verified, nameColor: d.name_color || '' };
   seen = LS.get('zc_seen_' + me.id, {});
   contacts = {}; blocked = []; idName = {}; unread = {}; current = null;
   Object.keys(msgsCache).forEach(k => delete msgsCache[k]);
@@ -739,6 +823,8 @@ async function enter(sess) {
 function stopPeer() {
   if (chan) { sb.removeChannel(chan); chan = null; }
   if (pres) { sb.removeChannel(pres); pres = null; }
+  if (tin) { sb.removeChannel(tin); tin = null; }
+  Object.keys(tch).forEach(k => { sb.removeChannel(tch[k]); delete tch[k]; });
   online = {}; setNet('offline');
 }
 async function logout() { stopPeer(); current = null; closePanel(); cancelRec(); authMode = 'login'; try { await sb.auth.signOut(); } catch (e) {} showAuth(); }
@@ -753,7 +839,7 @@ async function wipe() {
 }
 
 /* ---------- render: home ---------- */
-const prevText = m => { const k = m.kind || 'text'; return k === 'image' ? '📷 Foto' : k === 'video' ? '🎥 Video' : k === 'audio' ? '🎤 Pesan suara' : k === 'sticker' ? '🖼 Stiker' : m.text; };
+const prevText = m => { if (m.del) return 'Pesan dihapus'; const k = m.kind || 'text'; return k === 'image' ? 'Foto' : k === 'video' ? 'Video' : k === 'audio' ? 'Pesan suara' : k === 'sticker' ? 'Stiker' : m.text; };
 function sortedContacts() { return Object.keys(contacts).filter(u => !isBlocked(u)).sort((a, b) => lastTs(b) - lastTs(a) || a.localeCompare(b)); }
 function activeStories() { const now = Date.now(); return stories.filter(s => now - s.ts < STORY_TTL); }
 function storyGroups() {
@@ -777,16 +863,18 @@ function renderHome() {
   $('#stories').replaceChildren(
     h('button', { class: 'plus', type: 'button', 'aria-label': 'buat story', onclick: openStoryNew }),
     ...storyGroups().map(storyCard));
-  const list = sortedContacts();
-  $('#chatList').replaceChildren(...(list.length ? list.map(u => {
+  const all = sortedContacts(), na = all.filter(u => contacts[u].archived).length;
+  const list = all.filter(u => !!contacts[u].archived === showArch).sort((a, b) => (contacts[b].pinned ? 1 : 0) - (contacts[a].pinned ? 1 : 0));
+  $('#chatList').replaceChildren(...archRow(na), ...(list.length ? list.map(u => {
     const n = unread[u] || 0, m = lastMsg(u);
     const av = avatar(u, contacts[u].avatar, 'lg'); av.classList.add(isOnline(u) ? 'ring-on' : 'ring-off');
-    return h('button', { class: 'row glass', type: 'button', onclick: () => openChat(u) },
+    return withLong(h('button', { class: 'row glass', type: 'button', onclick: () => openChat(u) },
       av,
       h('div', { class: 'meta' },
         h('div', { class: 'nm' }, nameNode(u)),
         h('div', { class: 'pv' + (n ? '' : ' read') }, m ? (m.from === 'me' ? 'You: ' : '') + prevText(m) : 'Belum ada pesan')),
-      n ? h('span', { class: 'cnt' }, n > 99 ? '99+' : n) : null);
+      contacts[u].pinned ? h('span', { class: 'pinmk' }) : null,
+      n ? h('span', { class: 'cnt' }, n > 99 ? '99+' : n) : null), () => chatMenu(u));
   }) : [h('div', { class: 'empty' }, 'Belum ada teman. Buka tab Contact lalu tekan "add friend" untuk menambah teman lewat username-nya.')]));
 }
 function renderContacts() {
@@ -806,12 +894,8 @@ const NET_TXT = { online: 'Terhubung', connecting: 'Menghubungkan…', offline: 
 function renderProfile() {
   if (!me) return;
   $('#profileBox').replaceChildren(h('div', { class: 'profile' },
-    h('button', { class: 'avbtn', type: 'button', onclick: changeAvatar, 'aria-label': 'ganti foto' }, avatar(me.username, me.avatar, 'xl'), h('span', { class: 'cam' }, '📷')),
-    h('div', { class: 'big' }, nameNode(me.username)),
-    h('div', { class: 'stat' }, '@' + me.username),
-    me.bio ? h('div', { class: 'bio' }, me.bio) : null,
-    me.birth ? h('div', { class: 'stat' }, '🎂 ' + fmtBirth(me.birth)) : null,
-    h('div', { class: 'stat' }, NET_TXT[net] || ''),
+    h('button', { class: 'pvban', type: 'button', 'aria-label': 'ubah banner', style: me.banner ? 'background-image:url("' + me.banner + '")' : null, onclick: openEditProfile }),
+    h('button', { class: 'avbtn', type: 'button', onclick: changeAvatar, 'aria-label': 'ganti foto' }, avatar(me.username, me.avatar, 'xl'), camNode()),
     h('div', { class: 'btnstack' },
       h('button', { class: 'primary', type: 'button', onclick: openEditProfile }, 'edit profil'),
       h('button', { class: 'glassbtn', type: 'button', onclick: openSettings }, 'pengaturan'),
@@ -823,7 +907,7 @@ function renderChatHead() {
   const on = isOnline(current), el = $('#chStatus');
   $('#chAv').replaceChildren(avatar(current, contacts[current] && contacts[current].avatar, 'md'));
   $('#chName').replaceChildren(nameNode(current));
-  el.textContent = on ? 'online' : 'offline · pesan tersimpan & terkirim saat teman online';
+  el.textContent = typing[current] ? 'mengetik…' : on ? 'online' : 'offline · pesan tersimpan & terkirim saat teman online';
   el.className = 'st' + (on ? ' on' : '');
 }
 function renderAll() { renderHome(); renderContacts(); renderProfile(); if (current) renderChatHead(); }
@@ -867,16 +951,18 @@ function renderMsgs(forceBottom) {
   const near = forceBottom || box.scrollHeight - box.scrollTop - box.clientHeight < 160;
   const a = getMsgs(current), frag = document.createDocumentFragment();
   let last = '';
-  if (!a.length) frag.append(h('div', { class: 'empty' }, 'Belum ada pesan. Sapa dulu 👋'));
+  if (!a.length) frag.append(h('div', { class: 'empty' }, 'Belum ada pesan. Sapa dulu.'));
   a.forEach(m => {
     const d = dayLabel(m.ts);
     if (d !== last) { frag.append(h('div', { class: 'day' }, d)); last = d; }
-    frag.append(msgNode(m));
+    frag.append(msgDecor(m));
   });
+  if (typing[current]) frag.append(h('div', { class: 'brow them' }, h('div', { class: 'bubble them glass typing' }, h('i'), h('i'), h('i'))));
   box.replaceChildren(frag);
   if (near) { box.scrollTop = box.scrollHeight; setTimeout(() => { if (near) box.scrollTop = box.scrollHeight; }, 120); }
 }
 function openChat(u) {
+  if (editing) stopEdit();
   current = u; unread[u] = 0; LS.set('zc_unread', unread);
   closePanel(); updateSendMode(); $('#msgIn').value = '';
   renderChatHead(); renderMsgs(true);
@@ -947,6 +1033,7 @@ async function flush(u) {
 function submitMsg() {
   const t = $('#msgIn').value.trim();
   if (!t || !current) return;
+  if (editing) { const m = editing; stopEdit(); if (t !== m.text) editMsg(m, t); return; }
   sendText(current, t, false); $('#msgIn').value = ''; updateSendMode();
 }
 const ICON_SEND = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V5M5 12l7-7 7 7"/></svg>';
@@ -1015,7 +1102,7 @@ $('#emoBtn').addEventListener('click', togglePanel);
 function renderPanel() {
   const p = $('#panel');
   const tb = (id, label) => h('button', { type: 'button', class: panelTab === id ? 'on' : '', onclick: () => { panelTab = id; manage = false; renderPanel(); } }, label);
-  const tabs = h('div', { class: 'ptabs' }, tb('emoji', '😊 Emoji'), tb('sticker', '🖼 Stiker'), h('span', { class: 'sp' }),
+  const tabs = h('div', { class: 'ptabs' }, tb('emoji', 'Emoji'), tb('sticker', 'Stiker'), h('span', { class: 'sp' }),
     panelTab === 'sticker' && myStickers.length ? h('button', { type: 'button', class: manage ? 'on' : '', onclick: () => { manage = !manage; renderPanel(); } }, manage ? 'selesai' : 'kelola') : null);
   let body;
   if (panelTab === 'emoji') {
@@ -1165,7 +1252,7 @@ function showStory() {
   const mine = sv.u === me.username, av = mine ? me.avatar : contacts[sv.u] && contacts[sv.u].avatar;
   $('#shead').replaceChildren(...nn([avatar(sv.u, av, 'md'),
     h('div', { class: 'who' }, nameNode(sv.u), h('span', { class: 'ago' }, ago(s.ts))),
-    mine ? h('button', { type: 'button', 'aria-label': 'hapus story', onclick: delStory }, '🗑') : null,
+    mine ? storyMore() : null,
     h('button', { type: 'button', 'aria-label': 'tutup', onclick: closeStories }, '✕')]));
   const b = $('#sbody'); b.replaceChildren(); b.style.background = s.kind === 'image' ? '#000' : storyBgStyle(s);
   if (s.kind === 'image') { const img = h('img', { alt: 'story' }); setMedia(img, s.mid); b.append(...nn([img, s.text ? h('div', { class: 'cap' }, s.text) : null])); }
@@ -1199,16 +1286,16 @@ function netbar(msg) { const b = $('#netbar'); b.hidden = !msg; if (msg) $('#net
 $('#netRetry').addEventListener('click', () => { stopPeer(); startPeer(); });
 function connectTo() {}
 function broadcastHello() { if (pres) pres.track({ hidden: !S.showOnline }); }
-function pushProfile() { sb.from('profiles').update({ name: me.name || '', bio: me.bio || '', birth: me.birth || null, avatar: me.avatar }).eq('id', me.id).then(r => { if (r.error) toast('Profil gagal disimpan ke server'); }); }
+function pushProfile() { sb.from('profiles').update({ name: me.name || '', bio: me.bio || '', birth: me.birth || null, avatar: me.avatar, banner: me.banner || null, frame: me.frame || 'none', name_color: me.nameColor || null }).eq('id', me.id).then(r => { if (r.error) toast('Profil gagal disimpan ke server'); }); }
 const pushBlock = u => { const c = contacts[u]; if (c && c.id) sb.from('contacts').update({ blocked: isBlocked(u) }).eq('owner_id', me.id).eq('contact_id', c.id).then(() => {}); };
 function addC(p) {
-  contacts[p.username] = { id: p.id, avatar: AV_RE.test(p.avatar || '') ? p.avatar : null, name: p.name || '', bio: p.bio || '', birth: p.birth || '' };
+  contacts[p.username] = { id: p.id, avatar: AV_RE.test(p.avatar || '') ? p.avatar : null, name: p.name || '', bio: p.bio || '', birth: p.birth || '', banner: AV_RE.test(p.banner || '') ? p.banner : null, frame: p.frame || 'none', verified: !!p.verified, nameColor: /^#[0-9a-f]{6}$/i.test(p.name_color || '') ? p.name_color : '' };
   idName[p.id] = p.username;
 }
 async function mergeRows(rows) {
   const need = S.onlyContacts ? [] : [...new Set(rows.filter(r => r.receiver_id === me.id && !r.delivered_at && !idName[r.sender_id]).map(r => r.sender_id))];
   if (need.length) {
-    const pr = await sb.from('profiles').select('id,username,name,bio,birth,avatar').in('id', need);
+    const pr = await sb.from('profiles').select('id,username,name,bio,birth,avatar,banner,frame,verified,name_color').in('id', need);
     (pr.data || []).forEach(addC);
     if (pr.data && pr.data.length) await sb.from('contacts').upsert(pr.data.map(p => ({ owner_id: me.id, contact_id: p.id })), { ignoreDuplicates: true });
   }
@@ -1216,9 +1303,15 @@ async function mergeRows(rows) {
   rows.forEach(r => {
     const mine = r.sender_id === me.id, u = idName[mine ? r.receiver_id : r.sender_id];
     if (!u || (!mine && isBlocked(u))) return;
+    if (Date.parse(r.created_at) <= (contacts[u].cleared || 0)) return;
     const a = getMsgs(u), ex = a.find(x => x.id === r.id), st = r.read_at ? 'read' : r.delivered_at ? 'delivered' : 'sent';
-    if (ex) { if (mine && rank[st] > (rank[ex.status] || 0)) ex.status = st; return; }
-    const m = { id: r.id, from: mine ? 'me' : 'them', kind: r.kind, text: r.body, big: r.big, ts: Date.parse(r.created_at), mid: r.media_path, path: r.media_path, mime: r.mime, dur: r.dur };
+    if (ex) {
+      if (mine && rank[st] > (rank[ex.status] || 0)) ex.status = st;
+      if (r.deleted_at && !ex.del) { ex.del = true; ex.text = ''; ex.mid = null; } else if (ex.kind === 'text' && r.body !== ex.text) { ex.text = r.body; ex.edited = !!r.edited_at; }
+      return;
+    }
+    const m = { id: r.id, from: mine ? 'me' : 'them', kind: r.kind, text: r.body, big: r.big, ts: Date.parse(r.created_at), mid: r.deleted_at ? null : r.media_path, path: r.media_path, mime: r.mime, dur: r.dur, del: !!r.deleted_at, edited: !!r.edited_at };
+    if (r.deleted_at) m.text = '';
     if (mine) m.status = st; else m.rd = !!r.read_at || m.ts <= (seen[u] || 0);
     a.push(m); touched.add(u);
   });
@@ -1229,9 +1322,11 @@ async function fetchRows(n) {
   return (r.data || []).reverse();
 }
 async function loadAll() {
-  const cr = await sb.from('contacts').select('blocked, profiles:contact_id(id,username,name,bio,birth,avatar)').eq('owner_id', me.id);
-  (cr.data || []).forEach(r => { if (r.profiles) { addC(r.profiles); if (r.blocked) blocked.push(r.profiles.username); } });
+  const cr = await sb.from('contacts').select('blocked, pinned, archived, cleared_at, profiles:contact_id(id,username,name,bio,birth,avatar,banner,frame,verified,name_color)').eq('owner_id', me.id);
+  (cr.data || []).forEach(r => { if (r.profiles) { addC(r.profiles); Object.assign(contacts[r.profiles.username], { pinned: r.pinned, archived: r.archived, cleared: r.cleared_at ? Date.parse(r.cleared_at) : 0 }); if (r.blocked) blocked.push(r.profiles.username); } });
   await mergeRows(await fetchRows(1000));
+  const rr = await sb.from('reactions').select('message_id,user_id,emoji').limit(3000);
+  (rr.data || []).forEach(applyRx);
   Object.keys(contacts).forEach(u => { const n = getMsgs(u).filter(m => m.from === 'them' && !m.rd).length; if (n) unread[u] = n; });
   sb.from('messages').update({ delivered_at: new Date().toISOString() }).eq('receiver_id', me.id).is('delivered_at', null).then(() => {});
 }
@@ -1249,18 +1344,22 @@ async function onNew(r) {
   const had = idName[r.sender_id] && getMsgs(idName[r.sender_id]).some(x => x.id === r.id);
   await mergeRows([r]);
   const u = idName[r.sender_id]; if (!u || had || isBlocked(u)) return;
+  delete typing[u];
   sb.from('messages').update({ delivered_at: new Date().toISOString() }).eq('id', r.id).then(() => {});
   if (current === u && document.visibilityState === 'visible' && curScreen === 'chat') markRead(u);
   else { unread[u] = (unread[u] || 0) + 1; beep(); }
   renderHome(); renderContacts(); if (current === u) renderMsgs(false);
 }
-function onUpd(r) { const u = idName[r.receiver_id]; if (u) setStatus(u, [r.id], r.read_at ? 'read' : r.delivered_at ? 'delivered' : 'sent'); }
+function onUpd(r) { const u = idName[r.receiver_id]; if (u) setStatus(u, [r.id], r.read_at ? 'read' : r.delivered_at ? 'delivered' : 'sent'); applyEdit(r); }
 function startPeer() {
   if (!me || !sb) return;
   stopPeer(); setNet('connecting'); netbar('');
   chan = sb.channel('msgs-' + me.id)
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: 'receiver_id=eq.' + me.id }, p => onNew(p.new))
     .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: 'sender_id=eq.' + me.id }, p => onUpd(p.new))
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: 'receiver_id=eq.' + me.id }, p => applyEdit(p.new))
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'reactions' }, p => { if (p.new && p.new.message_id) onRx(p.new); })
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, p => onProf(p.new))
     .subscribe(s => {
       if (s === 'SUBSCRIBED') { setNet('online'); netbar(''); syncMissed(); Object.keys(contacts).forEach(flush); }
       else if (s === 'CHANNEL_ERROR' || s === 'TIMED_OUT' || s === 'CLOSED') setNet('offline');
@@ -1271,6 +1370,7 @@ function startPeer() {
     Object.keys(st).forEach(k => { const m = st[k][0]; if (k !== me.username && m && !m.hidden) online[k] = 1; });
     renderAll();
   }).subscribe(s => { if (s === 'SUBSCRIBED') pres.track({ hidden: !S.showOnline }); });
+  tin = sb.channel('typing:' + me.id).on('broadcast', { event: 't' }, p => onTyping(p.payload && p.payload.from)).subscribe();
 }
 setInterval(() => {
   if (!me) return; purgeStories();
@@ -1292,7 +1392,7 @@ async function addFriend() {
   if (!NAME_RE.test(u)) return err('Username tidak valid');
   if (u === me.username) return err('Itu username kamu sendiri');
   if (contacts[u]) return err('Sudah ada di kontak');
-  const pr = await sb.from('profiles').select('id,username,name,bio,birth,avatar').eq('username', u).maybeSingle();
+  const pr = await sb.from('profiles').select('id,username,name,bio,birth,avatar,banner,frame,verified,name_color').eq('username', u).maybeSingle();
   if (pr.error) return err('Gagal mencari. Coba lagi.');
   if (!pr.data) return err('Username tidak ditemukan');
   const ins = await sb.from('contacts').upsert({ owner_id: me.id, contact_id: pr.data.id, blocked: false });
@@ -1325,11 +1425,12 @@ $('#addBtn2').addEventListener('click', openSheet);
 function openProfileView(u) {
   const isMe = u === me.username, p = isMe ? me : (contacts[u] || {}), on = !isMe && isOnline(u);
   $('#pvCard').replaceChildren(...nn([
+    h('div', { class: 'pvban', style: p.banner ? 'background-image:url("' + p.banner + '")' : null }),
     avatar(u, p.avatar, 'xl'),
     h('div', { class: 'big' }, nameNode(u)),
     h('div', { class: 'stat' }, '@' + u),
     p.bio ? h('div', { class: 'bio' }, p.bio) : null,
-    p.birth ? h('div', { class: 'stat' }, '🎂 ' + fmtBirth(p.birth)) : null,
+    p.birth ? h('div', { class: 'stat' }, 'Lahir ' + fmtBirth(p.birth)) : null,
     isMe ? null : h('div', { class: 'stat' + (on ? ' on' : '') }, on ? 'online' : 'offline'),
     h('div', { class: 'btns' },
       !isMe && curScreen !== 'chat' ? h('button', { class: 'primary small', type: 'button', onclick: () => { closePV(); openChat(u); } }, 'kirim pesan') : null,
@@ -1347,12 +1448,13 @@ function changeAvatar() {
       const r = Math.min(img.width, img.height);
       cv.getContext('2d').drawImage(img, (img.width - r) / 2, (img.height - r) / 2, r, r, 0, 0, s, s);
       me.avatar = cv.toDataURL('image/jpeg', .8); pushProfile(); renderAll(); broadcastHello();
-      if (curScreen === 'editprofile') $('#epAv').replaceChildren(avatar(me.username, me.avatar, 'xl'), h('span', { class: 'cam' }, '📷'));
+      if (curScreen === 'editprofile') $('#epAv').replaceChildren(avatar(me.username, me.avatar, 'xl'), camNode());
     } catch (e) { toast('Gambar tidak bisa dibaca'); }
   });
 }
 function openEditProfile() {
-  $('#epAv').replaceChildren(avatar(me.username, me.avatar, 'xl'), h('span', { class: 'cam' }, '📷'));
+  $('#epAv').replaceChildren(avatar(me.username, me.avatar, 'xl'), camNode());
+  renderEpExtra();
   $('#epUser').value = '@' + me.username; $('#epName').value = me.name || ''; $('#epBio').value = me.bio || ''; $('#epBirth').value = me.birth || '';
   go('editprofile');
 }
@@ -1381,6 +1483,8 @@ function renderSettings() {
     r.oninput = () => { S[key] = +r.value; applyTheme(); }; r.onchange = saveS;
     return h('div', { class: 'rangebox' }, r, h('div', { class: 'ends' }, h('span', null, l1), h('span', null, l2)));
   };
+  const sg = (key, opts) => h('div', { class: 'seg' }, ...opts.map(([v, l]) => h('button', { type: 'button', class: S[key] === v ? 'on' : '', onclick: () => { S[key] = v; saveS(); applyTheme(); renderSettings(); } }, l)));
+  const cin = key => { const c = h('input', { type: 'color', value: S[key] }); c.oninput = () => { S[key] = c.value; applyTheme(); }; c.onchange = saveS; return c; };
   const blockedList = blocked.length ? blocked.join(', ') : 'tidak ada';
   $('#settingsBody').replaceChildren(
     ...sGroup('Akun',
@@ -1391,6 +1495,22 @@ function renderSettings() {
       h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Warna UI'), h('div', { style: 'margin-top:10px' }, sw))),
       h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Kaca (liquid glass)'), h('div', { class: 'sdesc' }, 'Geser ke kiri supaya lebih transparan'), range(.3, 1.8, .05, 'glass', 'transparan', 'buram'))),
       h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Blur'), range(0, 40, 1, 'blur', 'tajam', 'kabur')))),
+    ...sGroup('Gaya UI',
+      sRow('Gaya', null, sg('ui', [['liquid', 'Liquid'], ['gradient', 'Gradient'], ['plat', 'Plat']])),
+      sRow('Warna kedua (gradient)', null, cin('acc2'))),
+    ...sGroup('Background',
+      sRow('Mode', null, sg('bg', [['blobs', 'Blob'], ['gradient', 'Gradient'], ['plain', 'Plat']])),
+      sRow('Warna 1', null, cin('bgC1')),
+      sRow('Warna 2 (gradient)', null, cin('bgC2'))),
+    ...sGroup('Wallpaper chat',
+      sRow('Foto wallpaper', wpUrl ? 'Foto aktif' : null, h('div', { style: 'display:flex' }, h('button', { class: 'tiny', type: 'button', onclick: pickWp }, 'pilih'), h('button', { class: 'tiny', type: 'button', onclick: clearWp }, 'hapus'))),
+      h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Preset'),
+        h('div', { class: 'swatches', style: 'margin-top:10px' }, ...WP_PRESETS.map((g, i) => h('button', { type: 'button', class: 'sw-c' + (S.wpPreset === i && !wpUrl ? ' on' : ''), style: 'background:' + g, 'aria-label': 'preset ' + (i + 1), onclick: () => { S.wpPreset = i; saveS(); clearWp(true); } }))))),
+      h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Kegelapan'), range(0, .8, .05, 'wpDim', 'terang', 'gelap'))),
+      h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Blur wallpaper'), range(0, 20, 1, 'wpBlur', 'tajam', 'kabur')))),
+    ...sGroup('Font',
+      sRow('Jenis font', null, sg('font', [['def', 'Bawaan'], ['sys', 'HP'], ['serif', 'Serif'], ['mono', 'Mono']])),
+      sRow('Font dari file', S.font === 'cust' ? 'Font kustom aktif' : '.ttf, .otf, .woff', h('button', { class: 'tiny', type: 'button', onclick: pickFont }, 'impor'))),
     ...sGroup('Privasi',
       sRow('Status online', 'Jika mati, temanmu melihatmu offline', sToggle('showOnline', broadcastHello)),
       sRow('Tanda terbaca', 'Kirim ✓✓ biru saat kamu membuka pesan', sToggle('readReceipts', () => current && markRead(current))),
@@ -1407,9 +1527,257 @@ function renderSettings() {
 }
 function openSettings() { renderSettings(); go('settings'); }
 async function clearChats() {
-  if (!(await ask('Hapus semua riwayat chat?', 'Semua pesan, foto, video, dan suara di perangkat ini dihapus.', 'hapus'))) return;
-  for (const u of Object.keys(contacts)) { getMsgs(u).forEach(m => m.mid && DB.del(m.mid)); msgsCache[u] = []; LS.set('zm_' + u, []); }
-  unread = {}; LS.set('zc_unread', unread); renderAll(); toast('Riwayat chat dihapus');
+  if (!(await ask('Bersihkan semua obrolan?', 'Semua pesan di perangkatmu dibersihkan. Pesan di sisi teman tidak terpengaruh.', 'bersihkan'))) return;
+  Object.keys(contacts).forEach(doClear); renderAll(); toast('Obrolan dibersihkan');
+}
+
+
+/* ---------- aksi pesan, reaksi, mengetik, pin/arsip ---------- */
+let editing = null, showArch = false, tin = null, lastTy = 0;
+const typing = {}, typingT = {}, tch = {};
+const eb = h('div', { id: 'editBar', class: 'editbar', hidden: '' }, h('span', null, 'Mengedit pesan'), h('button', { type: 'button', onclick: () => stopEdit() }, 'batal'));
+$('#msgIn').parentElement.before(eb);
+
+function onLong(el, fn) {
+  let t, x = 0, y = 0;
+  el.addEventListener('touchstart', e => { const p = e.touches[0]; x = p.clientX; y = p.clientY; clearTimeout(t); t = setTimeout(() => { el._lp = true; fn(); }, 420); }, { passive: true });
+  el.addEventListener('touchmove', e => { const p = e.touches[0]; if (Math.abs(p.clientX - x) + Math.abs(p.clientY - y) > 10) clearTimeout(t); }, { passive: true });
+  ['touchend', 'touchcancel'].forEach(ev => el.addEventListener(ev, () => clearTimeout(t)));
+  el.addEventListener('contextmenu', e => { e.preventDefault(); el._lp = true; fn(); });
+  el.addEventListener('click', e => { if (el._lp) { e.stopImmediatePropagation(); e.preventDefault(); el._lp = false; } }, true);
+}
+function withLong(el, fn) { onLong(el, fn); return el; }
+
+function closePop() { const p = $('#pop'); if (p) p.remove(); }
+function popMenu(preview, items, emos, pick) {
+  closePop();
+  const box = h('div', { class: 'popbox' });
+  if (preview) box.append(preview);
+  if (emos) box.append(h('div', { class: 'emrow glass' }, ...emos.map(e => h('button', { type: 'button', onclick: () => { closePop(); pick(e); } }, e))));
+  box.append(h('div', { class: 'pact glass' }, ...items.map(i => h('button', { type: 'button', class: i.danger ? 'dg' : '', onclick: () => { closePop(); i.fn(); } }, i.t))));
+  const ov = h('div', { id: 'pop', onclick: e => { if (e.target === ov) closePop(); } }, box);
+  document.body.append(ov);
+}
+
+function rxList(m) {
+  const c = {}; Object.keys(m.rx || {}).forEach(k => { const e = m.rx[k]; if (e) c[e] = (c[e] || 0) + 1; });
+  return Object.keys(c).map(e => [e, c[e]]);
+}
+function msgDecor(m) {
+  const mine = m.from === 'me';
+  if (m.del) return h('div', { class: 'brow ' + m.from }, h('div', { class: 'bubble gone ' + (mine ? 'me' : 'them glass') }, h('span', { class: 'txt' }, 'Pesan ini telah dihapus')));
+  const n = msgNode(m), b = n.firstElementChild;
+  if (m.edited) { const tm = n.querySelector('.tm'); if (tm) tm.prepend('diedit · '); }
+  const rx = rxList(m), col = h('div', { class: 'bcol' }, b);
+  if (rx.length) col.append(h('div', { class: 'rxs' }, ...rx.map(([e, c]) => h('span', { class: 'rx' + (m.rx[me.id] === e ? ' mine' : '') }, e + (c > 1 ? ' ' + c : '')))));
+  n.replaceChildren(col);
+  onLong(b, () => msgMenu(m));
+  return n;
+}
+function msgMenu(m) {
+  const mine = m.from === 'me', txt = (m.kind || 'text') === 'text', ok = mine && m.status !== 'pending', items = [];
+  if (txt && m.text) items.push({ t: 'Salin', fn: () => { try { navigator.clipboard.writeText(m.text).then(() => toast('Disalin')); } catch (e) {} } });
+  if (ok && txt) items.push({ t: 'Edit', fn: () => startEdit(m) });
+  if (ok) items.push({ t: 'Hapus untuk semua', danger: true, fn: () => delMsg(m) });
+  popMenu(msgNode(m), items, ['👍', '❤️', '😂', '😮', '😢', '🙏'], e => react(m, e));
+}
+function startEdit(m) { editing = m; $('#msgIn').value = m.text; eb.hidden = false; $('#msgIn').focus(); updateSendMode(); }
+function stopEdit() { editing = null; eb.hidden = true; $('#msgIn').value = ''; updateSendMode(); }
+async function editMsg(m, t) {
+  const old = m.text; m.text = t; m.edited = true; renderMsgs(false); renderHome();
+  const r = await sb.from('messages').update({ body: t, edited_at: new Date().toISOString() }).eq('id', m.id);
+  if (r.error) { m.text = old; renderMsgs(false); renderHome(); toast('Edit gagal'); }
+}
+async function delMsg(m) {
+  if (!(await ask('Hapus pesan?', 'Pesan ini akan hilang untuk kamu dan teman.', 'hapus'))) return;
+  const r = await sb.from('messages').update({ deleted_at: new Date().toISOString(), body: '', media_path: null }).eq('id', m.id);
+  if (r.error) return toast('Gagal menghapus pesan');
+  if (m.mid) DB.del(m.mid);
+  m.del = true; m.text = ''; m.mid = null; renderMsgs(false); renderHome();
+}
+function applyEdit(r) {
+  const u = idName[r.sender_id === me.id ? r.receiver_id : r.sender_id]; if (!u) return;
+  const m = getMsgs(u).find(x => x.id === r.id); if (!m) return;
+  if (r.deleted_at) { m.del = true; m.text = ''; m.mid = null; }
+  else if (m.kind === 'text' && r.body !== m.text) { m.text = r.body; m.edited = !!r.edited_at; }
+  if (current === u) renderMsgs(false); renderHome();
+}
+
+async function react(m, e) {
+  m.rx = m.rx || {};
+  const has = me.id in m.rx, nv = m.rx[me.id] === e ? null : e;
+  m.rx[me.id] = nv; renderMsgs(false);
+  const upd = () => sb.from('reactions').update({ emoji: nv }).eq('message_id', m.id).eq('user_id', me.id);
+  let r = has ? await upd() : await sb.from('reactions').insert({ message_id: m.id, user_id: me.id, emoji: nv });
+  if (r.error && r.error.code === '23505') r = await upd();
+  if (r.error) toast('Reaksi gagal dikirim');
+}
+function applyRx(r) {
+  for (const u of Object.keys(contacts)) {
+    const m = getMsgs(u).find(x => x.id === r.message_id);
+    if (m) { m.rx = m.rx || {}; m.rx[r.user_id] = r.emoji; return u; }
+  }
+}
+function onRx(r) { const u = applyRx(r); if (u && current === u) renderMsgs(false); }
+
+function sendTyping() {
+  const ct = current && contacts[current];
+  if (!ct || !ct.id || Date.now() - lastTy < 2500) return;
+  lastTy = Date.now();
+  const ch = tch[ct.id] || (tch[ct.id] = sb.channel('typing:' + ct.id).subscribe());
+  ch.send({ type: 'broadcast', event: 't', payload: { from: me.username } });
+}
+$('#msgIn').addEventListener('input', () => { if ($('#msgIn').value && !editing) sendTyping(); });
+function onTyping(from) {
+  if (!from || !contacts[from]) return;
+  typing[from] = 1; clearTimeout(typingT[from]);
+  typingT[from] = setTimeout(() => { delete typing[from]; if (current === from) { renderChatHead(); renderMsgs(false); } }, 4500);
+  if (current === from) { renderChatHead(); renderMsgs(false); }
+}
+
+function archRow(na) {
+  if (showArch) return [h('button', { class: 'row glass arch', type: 'button', onclick: () => { showArch = false; renderHome(); } }, 'Kembali ke chat')];
+  return na ? [h('button', { class: 'row glass arch', type: 'button', onclick: () => { showArch = true; renderHome(); } }, 'Arsip (' + na + ')')] : [];
+}
+function setFlag(u, k, v) {
+  const c = contacts[u]; c[k] = v;
+  if (c.id) sb.from('contacts').update({ [k]: v }).eq('owner_id', me.id).eq('contact_id', c.id).then(() => {});
+  renderHome();
+}
+function doClear(u) {
+  const c = contacts[u], a = getMsgs(u), last = a.reduce((x, m) => Math.max(x, m.ts), 0) || Date.now();
+  a.forEach(m => m.mid && DB.del(m.mid));
+  msgsCache[u] = []; c.cleared = last; delete unread[u];
+  if (c.id) sb.from('contacts').update({ cleared_at: new Date(last).toISOString() }).eq('owner_id', me.id).eq('contact_id', c.id).then(() => {});
+}
+function chatMenu(u) {
+  const c = contacts[u];
+  popMenu(null, [
+    { t: c.pinned ? 'Lepas sematan' : 'Sematkan chat', fn: () => setFlag(u, 'pinned', !c.pinned) },
+    { t: c.archived ? 'Keluarkan dari arsip' : 'Arsipkan chat', fn: () => setFlag(u, 'archived', !c.archived) },
+    { t: 'Bersihkan obrolan', danger: true, fn: async () => { if (await ask('Bersihkan obrolan?', 'Pesan dengan ' + u + ' dibersihkan dari perangkatmu. Teman tidak terpengaruh.', 'bersihkan')) { doClear(u); renderAll(); } } }
+  ]);
+}
+
+
+/* ---------- wallpaper chat, font ---------- */
+const WP_PRESETS = ['linear-gradient(160deg,#0f2027,#2c5364)', 'linear-gradient(160deg,#ff9a9e,#fad0c4)', 'linear-gradient(160deg,#a18cd1,#fbc2eb)', 'linear-gradient(160deg,#84fab0,#8fd3f4)'];
+const FONTS = { def: '"Helvetica Neue",Helvetica,Arial,sans-serif', sys: 'system-ui,-apple-system,"Segoe UI",Roboto,sans-serif', serif: 'Georgia,"Times New Roman",serif', mono: 'ui-monospace,Menlo,Consolas,monospace' };
+const wpEl = h('div', { id: 'wp' }, h('i'));
+$('#chat').prepend(wpEl);
+let wpUrl = null;
+function applyWp() {
+  const bg = wpUrl ? 'url("' + wpUrl + '") center/cover' : S.wpPreset >= 0 ? WP_PRESETS[S.wpPreset] : '';
+  wpEl.firstChild.style.background = bg; wpEl.style.display = bg ? '' : 'none';
+}
+async function loadWp() {
+  try { const b = await DB.get('wallpaper'); if (wpUrl) URL.revokeObjectURL(wpUrl); wpUrl = b ? URL.createObjectURL(b) : null; } catch (e) {}
+  applyWp();
+}
+function clearWp(keepPreset) {
+  DB.del('wallpaper'); wpUrl = null;
+  if (keepPreset !== true) { S.wpPreset = -1; saveS(); }
+  applyWp(); renderSettings();
+}
+function pickWp() {
+  const inp = h('input', { type: 'file', accept: 'image/*' });
+  inp.onchange = async () => {
+    const f = inp.files[0]; if (!f) return;
+    try { const b = await shrink(f, 1280, .82); await DB.put('wallpaper', b); await loadWp(); renderSettings(); }
+    catch (e) { toast('Gambar gagal dibaca'); }
+  };
+  inp.click();
+}
+function applyFont() { document.documentElement.style.setProperty('--ff', S.font === 'cust' ? 'ZCustom,' + FONTS.def : FONTS[S.font] || FONTS.def); }
+async function loadFont() {
+  try { const b = await DB.get('font'); if (b) { const f = new FontFace('ZCustom', await b.arrayBuffer()); await f.load(); document.fonts.add(f); } } catch (e) {}
+  applyFont();
+}
+function pickFont() {
+  const inp = h('input', { type: 'file', accept: '.ttf,.otf,.woff,.woff2,font/*' });
+  inp.onchange = async () => {
+    const f = inp.files[0]; if (!f) return;
+    try { await DB.put('font', f); await loadFont(); S.font = 'cust'; saveS(); applyFont(); renderSettings(); }
+    catch (e) { toast('Font tidak bisa dipakai'); }
+  };
+  inp.click();
+}
+loadWp(); loadFont();
+
+
+/* ---------- ikon, kontak di samping, geser tab ---------- */
+const ICON_CAM = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8a2 2 0 0 1 2-2h2l1.5-2h7L17 6h2a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+const ICON_PEOPLE = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.8a3.5 3.5 0 0 1 0 6.4M18.5 14.2a6.5 6.5 0 0 1 3 5.8"/></svg>';
+function camNode() { const s = h('span', { class: 'cam' }); s.innerHTML = ICON_CAM; return s; }
+
+// daftar kontak pindah ke layar sendiri (dibuka dari tombol di pojok atas)
+const csec = h('section', { id: 'contacts', class: 'screen' },
+  h('header', { class: 'subhead' }, h('button', { class: 'back', 'data-back': '', type: 'button', 'aria-label': 'kembali' }), h('h2', null, 'Kontak')),
+  h('div', { class: 'subbody' }));
+csec.querySelector('.back').innerHTML = document.querySelector('.back').innerHTML;
+$('#app').append(csec);
+csec.querySelector('.subbody').append($('#contactList'), $('#addBtn2').parentElement);
+$('#tab-story').append($('#stories'));
+const cbtn = h('button', { class: 'burger glassbtn', type: 'button', 'aria-label': 'kontak', style: 'color:var(--fg)', onclick: () => go('contacts') });
+cbtn.innerHTML = ICON_PEOPLE;
+const mb = $('#menuBtn'), hb = h('div', { class: 'hdrbtns' }); mb.replaceWith(hb); hb.append(cbtn, mb);
+
+// geser kiri/kanan untuk pindah tab (mengetuk tetap bisa)
+(() => {
+  const el = $('.tabs'), TL = ['home', 'story', 'profile']; let x0 = 0, y0 = 0, ok = false;
+  el.addEventListener('touchstart', e => { const p = e.touches[0]; x0 = p.clientX; y0 = p.clientY; ok = !e.target.closest('input,textarea'); }, { passive: true });
+  el.addEventListener('touchend', e => {
+    if (!ok) return;
+    const p = e.changedTouches[0], dx = p.clientX - x0, dy = p.clientY - y0;
+    if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.6) return;
+    const i = TL.indexOf(tab) + (dx < 0 ? 1 : -1);
+    if (i < 0 || i >= TL.length) return;
+    setTab(TL[i]); renderAll();
+  }, { passive: true });
+})();
+
+
+/* ---------- banner, frame, warna nama, menu story ---------- */
+const FRAMES = [['none', 'Tanpa', 0], ['ring', 'Cincin', 0], ['neon', 'Neon', 0], ['rainbow', 'Pelangi', 0], ['gold', 'Emas', 1], ['aurora', 'Aurora', 1]];
+const ICON_DOTS = '<svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>';
+function storyMore() {
+  const b = h('button', { type: 'button', 'aria-label': 'menu story', onclick: () => popMenu(null, [{ t: 'Hapus story', danger: true, fn: delStory }]) });
+  b.innerHTML = ICON_DOTS; return b;
+}
+const toDataUrl = b => new Promise(r => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); });
+function pickBanner() {
+  const inp = h('input', { type: 'file', accept: 'image/*' });
+  inp.onchange = async () => {
+    const f = inp.files[0]; if (!f) return;
+    try {
+      const url = await toDataUrl(await shrink(f, 720, .6));
+      if (url.length > 118000 || !AV_RE.test(url)) return toast('Gambar terlalu besar, pilih yang lain');
+      me.banner = url; pushProfile(); renderEpExtra();
+    } catch (e) { toast('Gambar gagal dibaca'); }
+  };
+  inp.click();
+}
+const epBanRow = h('div', { class: 'fl' }, h('span', null, 'Banner profil'), h('div', { class: 'pvban', id: 'epBan' }),
+  h('div', { style: 'display:flex' }, h('button', { class: 'tiny', type: 'button', onclick: pickBanner }, 'pilih foto'), h('button', { class: 'tiny', type: 'button', onclick: () => { me.banner = null; pushProfile(); renderEpExtra(); } }, 'hapus')));
+const epFrRow = h('div', { class: 'fl' }, h('span', null, 'Frame foto profil (* khusus verified)'), h('div', { class: 'seg', id: 'epFr' }));
+const epNc = h('input', { id: 'epNc', type: 'color', value: '#ffffff' });
+epNc.oninput = () => { me.nameColor = epNc.value; };
+epNc.onchange = () => { pushProfile(); renderAll(); };
+const epNcRow = h('div', { class: 'fl' }, h('span', null, 'Warna nama (khusus verified)'), h('div', { style: 'display:flex;align-items:center;gap:10px' }, epNc,
+  h('button', { class: 'tiny', type: 'button', onclick: () => { me.nameColor = ''; pushProfile(); renderEpExtra(); renderAll(); } }, 'reset')));
+$('#epSave').before(epBanRow, epFrRow, epNcRow);
+function renderEpExtra() {
+  $('#epBan').style.backgroundImage = me.banner ? 'url("' + me.banner + '")' : '';
+  $('#epFr').replaceChildren(...FRAMES.map(([v, l, vip]) => h('button', {
+    type: 'button', class: (me.frame || 'none') === v ? 'on' : '',
+    onclick: () => { if (vip && !me.verified) return toast('Khusus akun verified'); me.frame = v; pushProfile(); renderEpExtra(); renderAll(); $('#epAv').replaceChildren(avatar(me.username, me.avatar, 'xl'), camNode()); }
+  }, l + (vip ? '*' : ''))));
+  epNc.value = me.nameColor || '#ffffff'; epNc.disabled = !me.verified;
+}
+function onProf(p) {
+  const u = idName[p.id]; if (!u || !contacts[u]) return;
+  const keep = { pinned: contacts[u].pinned, archived: contacts[u].archived, cleared: contacts[u].cleared };
+  addC(p); Object.assign(contacts[u], keep); renderAll();
 }
 
 /* ---------- navigasi & menu ---------- */

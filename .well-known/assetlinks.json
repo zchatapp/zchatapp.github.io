@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.zchatapp.twa",
+        "sha256_cert_fingerprints": ["34:C6:61:A8:FC:60:03:10:F4:56:15:AA:2D:86:FD:B9:67:22:09:C3:E1:C0:7A:6C:AB:DF:C3:6B:59:9E:A0:04"]
+      }
+    }]

@@ -446,6 +446,22 @@ body[data-tab=profile] .top,#tab-profile .sub{display:none}
 .vlist .vt{font-weight:700;padding:10px 0;border-bottom:1px solid var(--edge)}
 .vrow{display:flex;align-items:center;gap:12px;padding:10px 0}.vrow .vn{flex:1;display:flex;flex-direction:column}.vrow small{color:var(--fg2)}
 .vrow .hrt svg{width:22px;height:22px}
+
+.lockov{position:fixed;inset:0;z-index:400;display:flex;align-items:center;justify-content:center;background:rgba(5,6,10,.55);-webkit-backdrop-filter:blur(26px) saturate(1.2);backdrop-filter:blur(26px) saturate(1.2);animation:popin .25s ease}
+.lockcard{width:min(340px,90vw);padding:30px 22px 22px;border-radius:38px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.28);box-shadow:0 24px 70px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.35);display:flex;flex-direction:column;align-items:center;color:#fff}
+.lockcard.shake{animation:shk .4s}
+@keyframes shk{0%,100%{transform:none}20%{transform:translateX(-12px)}40%{transform:translateX(10px)}60%{transform:translateX(-7px)}80%{transform:translateX(5px)}}
+.ptitle{font-size:20px;font-weight:600}.psub{font-size:14px;opacity:.75;margin-top:4px;min-height:18px}
+.pdots{display:flex;gap:16px;margin:18px 0 24px}
+.pdots i{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.7);transition:background .15s,transform .15s}
+.pdots i.on{background:#fff;transform:scale(1.1)}
+.pad{display:grid;grid-template-columns:repeat(3,72px);gap:14px}
+.pk{width:72px;height:72px;border-radius:50%;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.14);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;padding:0}
+.pk:active{background:rgba(255,255,255,.32)}
+.pk.ghost{background:none;border-color:transparent;font-size:15px}
+.plink{background:none;border:0;color:rgba(255,255,255,.8);font-size:14px;margin-top:16px;padding:8px}
+.pgo{margin-top:16px;height:46px;padding:0 34px;border-radius:999px;border:0;background:#fff;color:#111;font-size:16px;font-weight:700}
+.pgo:disabled{opacity:.35}
 </style>
 </head>
 <body>
@@ -821,7 +837,7 @@ async function shrink(file, max, q) {
 
 /* ---------- state ---------- */
 let me = null, idName = {}, seen = {};
-const S = Object.assign({ theme: 'dark', accent: '#1d93e9', glass: .3, blur: 0, showOnline: true, readReceipts: true, shareAvatar: true, shareBio: true, shareBirth: false, onlyContacts: false, sound: true, ui: 'plat', acc2: '#9b4dff', bg: 'plain', bgC1: '', bgC2: '#9b4dff', font: 'def', wpDim: .15, wpBlur: 0, wpPreset: -1 }, LS.get('zc_settings', {}));
+const S = Object.assign({ theme: 'dark', accent: '#1d93e9', glass: .3, blur: 0, showOnline: true, readReceipts: true, shareAvatar: true, shareBio: true, shareBirth: false, onlyContacts: false, sound: true, ui: 'plat', acc2: '#9b4dff', bg: 'plain', bgC1: '', bgC2: '#9b4dff', lockAfter: '60', font: 'def', wpDim: .15, wpBlur: 0, wpPreset: -1 }, LS.get('zc_settings', {}));
 let contacts = {};
 let unread = {};
 let blocked = [];
@@ -1805,6 +1821,10 @@ function renderSettings() {
       h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Warna UI'), h('div', { style: 'margin-top:10px' }, sw))),
       h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Kaca (liquid glass)'), h('div', { class: 'sdesc' }, 'Geser ke kiri supaya lebih transparan'), range(.3, 1.8, .05, 'glass', 'transparan', 'buram'))),
       h('div', { class: 'srow' }, h('div', { class: 'stext' }, h('div', { class: 'slabel' }, 'Blur'), range(0, 40, 1, 'blur', 'tajam', 'kabur')))),
+    ...sGroup('Keamanan',
+      sRow('Kunci aplikasi', pinCfg() ? 'Aktif · PIN ' + pinCfg().len + ' angka' : 'Minta PIN saat aplikasi dibuka',
+        h('div', { style: 'display:flex' }, ...(pinCfg() ? [h('button', { class: 'tiny', type: 'button', onclick: changePin }, 'ubah'), h('button', { class: 'tiny', type: 'button', onclick: offPin }, 'matikan')] : [h('button', { class: 'tiny', type: 'button', onclick: setupPin }, 'atur')]))),
+      ...(pinCfg() ? [sRow('Kunci otomatis setelah', null, sg('lockAfter', [['0', 'Segera'], ['60', '1 mnt'], ['300', '5 mnt']]))] : [])),
     ...sGroup('Bantuan', sRow('Diagnosa koneksi', 'Kirim laporan ini jika pesan tidak muncul', h('button', { class: 'tiny', type: 'button', onclick: showDiag }, 'lihat'))),
     ...sGroup('Gaya UI',
       sRow('Gaya', null, sg('ui', [['liquid', 'Liquid'], ['gradient', 'Gradient'], ['plat', 'Plat']])),
@@ -2302,6 +2322,105 @@ function showDiag() {
      { t: 'Cek sekarang', fn: () => { pollNew(); syncMissed(); toast('Mengecek…'); } }]);
 }
 setInterval(pollNew, 8000);
+
+
+/* ---------- kunci aplikasi (PIN) ---------- */
+const PIN_MAX = 5, pinCfg = () => LS.get('zc_pin', null);
+let locked = false, hiddenAt = 0;
+async function hashPin(pin, salt) {
+  const s = salt + ':' + pin;
+  try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); }
+  catch (e) { let x = 5381; for (const c of s) x = ((x << 5) + x + c.charCodeAt(0)) | 0; return 'f' + x; }
+}
+async function checkPin(pin) { const c = pinCfg(); return !!c && (await hashPin(pin, c.salt)) === c.hash; }
+const ICON_DEL = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 5H9l-6 7 6 7h12a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1z"/><path d="M12 9l5 6M17 9l-5 6"/></svg>';
+function askPin(o) {
+  return new Promise(res => {
+    let d = '', busy = false;
+    const dots = h('div', { class: 'pdots' }, ...[...Array(o.len || PIN_MAX)].map(() => h('i')));
+    const card = h('div', { class: 'lockcard' }, h('div', { class: 'ptitle' }, o.title), h('div', { class: 'psub' }, o.sub || ''), dots);
+    const ov = h('div', { class: 'lockov' }, card);
+    const draw = () => [...dots.children].forEach((x, i) => x.classList.toggle('on', i < d.length));
+    const finish = v => { ov.remove(); res(v); };
+    const go2 = async () => {
+      if (busy) return; busy = true;
+      if (o.verify && !(await o.verify(d))) { d = ''; draw(); card.classList.remove('shake'); void card.offsetWidth; card.classList.add('shake'); busy = false; return; }
+      finish(d);
+    };
+    const gob = o.len ? null : h('button', { class: 'pgo', type: 'button', disabled: '', onclick: go2 }, 'Lanjut');
+    const press = k => {
+      if (busy) return;
+      if (k === 'del') d = d.slice(0, -1); else if (d.length < (o.len || PIN_MAX)) d += k;
+      draw();
+      if (gob) gob.disabled = d.length < 4;
+      if (o.len && d.length === o.len) setTimeout(go2, 120);
+    };
+    const key = k => { const b = h('button', { type: 'button', class: 'pk', onclick: () => press(k) }, k === 'del' ? '' : k); if (k === 'del') b.innerHTML = ICON_DEL; return b; };
+    const ghost = o.cancel ? h('button', { type: 'button', class: 'pk ghost', onclick: () => finish(null) }, 'Batal') : h('div');
+    card.append(h('div', { class: 'pad' }, ...['1', '2', '3', '4', '5', '6', '7', '8', '9'].map(key), ghost, key('0'), key('del')));
+    if (gob) card.append(gob);
+    if (o.forgot) card.append(h('button', { class: 'plink', type: 'button', onclick: async () => { if (await ask('Lupa PIN?', 'Kamu akan keluar dari akun dan kunci dimatikan. Login lagi memakai password.', 'keluar')) { LS.del('zc_pin'); await logout(); finish(null); } } }, 'Lupa PIN? Keluar dari akun'));
+    document.body.append(ov);
+  });
+}
+async function setupPin() {
+  const a = await askPin({ title: 'Buat PIN', sub: '4–5 angka', cancel: true }); if (!a) return;
+  const b = await askPin({ title: 'Ulangi PIN', cancel: true }); if (!b) return;
+  if (a !== b) return toast('PIN tidak sama');
+  const salt = uuid(); LS.set('zc_pin', { salt, hash: await hashPin(a, salt), len: a.length });
+  toast('Kunci aplikasi aktif'); renderSettings();
+}
+async function offPin() {
+  const c = pinCfg(); if (!c) return;
+  if (await askPin({ title: 'Masukkan PIN', len: c.len, cancel: true, verify: checkPin })) { LS.del('zc_pin'); toast('Kunci aplikasi dimatikan'); renderSettings(); }
+}
+async function changePin() {
+  const c = pinCfg(); if (!c) return;
+  if (await askPin({ title: 'PIN lama', len: c.len, cancel: true, verify: checkPin })) setupPin();
+}
+async function lockNow() {
+  const c = pinCfg(); if (locked || !c) return;
+  locked = true;
+  await askPin({ title: 'ZChat terkunci', sub: 'Masukkan PIN', len: c.len, verify: checkPin, forgot: true });
+  locked = false;
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') hiddenAt = Date.now();
+  else if (pinCfg() && hiddenAt && Date.now() - hiddenAt >= Number(S.lockAfter) * 1000) lockNow();
+});
+if (pinCfg()) lockNow();
+
+
+/* ---------- tombol back Android ---------- */
+function handleBack() {
+  if (typeof locked !== 'undefined' && locked) return true;
+  if ($('#pop')) { closePop(); return true; }
+  if ($('#postv')) { closePost(); return true; }
+  if ($('#confirm').classList.contains('open')) { $('#cfNo').click(); return true; }
+  if ($('#lightbox').classList.contains('open')) { $('#lightbox').classList.remove('open'); return true; }
+  if ($('#stkEd').classList.contains('open')) { $('#stkCancel').click(); return true; }
+  if ($('#storyNew').classList.contains('open')) { closeSn(); return true; }
+  if ($('#sheet').classList.contains('open')) { closeSheet(); return true; }
+  if ($('#pv').classList.contains('open')) { closePV(); return true; }
+  if ($('#storyView').classList.contains('open')) { closeStories(); return true; }
+  if ($('#menu').classList.contains('open')) { $('#menu').classList.remove('open'); return true; }
+  if (!$('#panel').hidden) { closePanel(); return true; }
+  if (editing) { stopEdit(); return true; }
+  if (replyTo) { stopReply(); return true; }
+  if (curScreen !== 'main') { back(); return true; }
+  if (tab !== 'home') { setTab('home'); renderAll(); return true; }
+  return false;
+}
+let exitT = 0;
+history.replaceState({ z: 0 }, '');
+history.pushState({ z: 1 }, '');
+window.addEventListener('popstate', () => {
+  if (handleBack()) { history.pushState({ z: 1 }, ''); return; }
+  toast('Tekan sekali lagi untuk keluar');
+  clearTimeout(exitT); exitT = setTimeout(() => history.pushState({ z: 1 }, ''), 2200);
+});
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.addEventListener('message', e => { if (e.data === 'zchat-update') toast('Versi baru siap. Tutup lalu buka lagi.'); });
 
 /* ---------- navigasi & menu ---------- */
 document.querySelectorAll('.nav button').forEach(b => b.addEventListener('click', () => { setTab(b.dataset.tab); renderAll(); }));
